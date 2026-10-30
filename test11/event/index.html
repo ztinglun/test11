@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>可報名活動清單</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-50 min-h-screen py-10 px-4 sm:px-8">
+  <div class="max-w-4xl mx-auto">
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-6 border-b border-slate-200 gap-4">
+      <div>
+        <h1 class="text-2xl font-bold text-slate-800">近期活動報名</h1>
+        <p class="text-sm text-slate-500 mt-1">即時查看可報名狀態並線上登記</p>
+      </div>
+      
+      <!-- 狀態篩選 -->
+      <div class="flex items-center gap-2">
+        <label for="filter" class="text-sm text-slate-600">狀態篩選：</label>
+        <select id="filter" class="border border-slate-300 rounded-lg px-3 py-1.5 text-sm bg-white text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
+          <option value="all">全部活動</option>
+          <option value="open" selected>僅顯示可報名</option>
+          <option value="full">已額滿</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- 活動列表容器 -->
+    <div id="event-list" class="mt-6 space-y-4"></div>
+  </div>
+
+  <script>
+    // 活動資料來源（可替換為後端 API）
+    const events = [
+      {
+        id: 1,
+        title: "2026 數位創新實務工作坊",
+        date: "2026-11-15 14:00 - 17:00",
+        location: "台北市信義區育成中心 3F",
+        current: 18,
+        capacity: 25,
+        fee: "免費"
+      },
+      {
+        id: 2,
+        title: "AI 應用工具與工作流程自動化講座",
+        date: "2026-11-20 19:00 - 21:00",
+        location: "線上直播 (Google Meet)",
+        current: 100,
+        capacity: 100,
+        fee: "NT$ 300"
+      },
+      {
+        id: 3,
+        title: "戶外攝影交流小聚：秋季光影探索",
+        date: "2026-11-28 09:00 - 12:00",
+        location: "陽明山國家公園遊客中心旁集合",
+        current: 7,
+        capacity: 12,
+        fee: "NT$ 150"
+      }
+    ];
+
+    function renderEvents(filterType = "open") {
+      const container = document.getElementById("event-list");
+      container.innerHTML = "";
+
+      const filtered = events.filter(evt => {
+        const isOpen = evt.current < evt.capacity;
+        if (filterType === "open") return isOpen;
+        if (filterType === "full") return !isOpen;
+        return true;
+      });
+
+      if (filtered.length === 0) {
+        container.innerHTML = `<div class="p-8 text-center text-slate-400 bg-white rounded-xl border border-slate-200">目前沒有符合條件的活動</div>`;
+        return;
+      }
+
+      filtered.forEach(evt => {
+        const isFull = evt.current >= evt.capacity;
+        const remaining = evt.capacity - evt.current;
+
+        const card = document.createElement("div");
+        card.className = "bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4 transition hover:border-slate-300";
+
+        card.innerHTML = `
+          <div class="space-y-1.5">
+            <div class="flex items-center gap-2">
+              <span class="px-2.5 py-0.5 rounded-full text-xs font-medium ${isFull ? 'bg-rose-50 text-rose-600' : 'bg-emerald-50 text-emerald-600'}">
+                ${isFull ? '已額滿' : `尚有名額 (${remaining})`}
+              </span>
+              <span class="text-xs text-slate-400 font-mono">${evt.fee}</span>
+            </div>
+            <h3 class="text-lg font-semibold text-slate-800">${evt.title}</h3>
+            <p class="text-sm text-slate-500">📅 ${evt.date}</p>
+            <p class="text-sm text-slate-500">📍 ${evt.location}</p>
+          </div>
+
+          <div class="flex items-center gap-3 self-end md:self-center">
+            <button 
+              ${isFull ? 'disabled' : ''} 
+              onclick="handleRegister(${evt.id})"
+              class="px-5 py-2 rounded-lg text-sm font-medium transition ${
+                isFull 
+                  ? 'bg-slate-100 text-slate-400 cursor-not-allowed' 
+                  : 'bg-blue-600 text-white hover:bg-blue-700 shadow-sm'
+              }">
+              ${isFull ? '無法報名' : '立即報名'}
+            </button>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function handleRegister(id) {
+      const target = events.find(e => e.id === id);
+      alert(`已前往報名：${target.title}`);
+    }
+
+    document.getElementById("filter").addEventListener("change", (e) => {
+      renderEvents(e.target.value);
+    });
+
+    // 初始載入（預設僅列出可報名）
+    renderEvents("open");
+  </script>
+</body>
+</html>
