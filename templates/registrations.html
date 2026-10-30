@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>{{ event_title }}：報名名單</h2>
+
+{% if registrations %}
+<table border="1">
+    <tr>
+        <th>姓名</th>
+        <th>電話</th>
+        <th>報名時間</th>
+    </tr>
+    {% for person in registrations %}
+    <tr>
+        <td>{{ person.name }}</td>
+        <td>{{ person.phone }}</td>
+        <td>{{ person.registered_at.strftime('%Y-%m-%d %H:%M') }}</td>
+    </tr>
+    {% endfor %}
+</table>
+{% else %}
+<p>目前還沒有人報名。</p>
+{% endif %}
+
+<p><a href="/events/{{ event_id }}/register">我要報名</a></p>
+<p><a href="/">返回首頁</a></p>
+{% endblock %}

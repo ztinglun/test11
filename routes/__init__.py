@@ -1,0 +1,1 @@
+from .registrations import router as registrations_router
