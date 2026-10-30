@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>{{ event_title }}：報名表</h2>
+
+{% if error %}
+<p style="color: red;">{{ error }}</p>
+{% endif %}
+
+<form method="post">
+    <p>
+        <label>姓名：</label>
+        <input type="text" name="name" required>
+    </p>
+    <p>
+        <label>電話：</label>
+        <input type="tel" name="phone" required>
+    </p>
+    <button type="submit">送出報名</button>
+</form>
+
+<p><a href="/events/{{ event_id }}/registrations">查看報名名單</a></p>
+<p><a href="/">返回首頁</a></p>
+{% endblock %}
